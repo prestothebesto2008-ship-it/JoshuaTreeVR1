@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Joshua Tree VR — West Entrance</title>
+<script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050505;font-family:Arial,sans-serif}
+#landing{position:fixed;inset:0;z-index:30;display:grid;place-items:center;text-align:center;color:#fff;background:linear-gradient(rgba(0,0,0,.15),rgba(0,0,0,.75)),url('images/entrance-sign.jpg') center/cover}
+#card{width:min(650px,88vw);padding:34px 28px;border-radius:24px;background:rgba(0,0,0,.62);backdrop-filter:blur(9px)}
+h1{font-size:clamp(40px,7vw,74px);margin:0 0 8px}h2{font-weight:500;margin:0 0 14px}
+#start{border:0;border-radius:999px;padding:14px 26px;font-size:17px;font-weight:700;cursor:pointer;margin-top:15px}
+#help{position:fixed;z-index:10;left:12px;bottom:12px;color:#fff;background:rgba(0,0,0,.58);padding:9px 12px;border-radius:11px;font-size:12px}
+</style>
+<script>
+const ROOMS={
+entrance:{title:"West Entrance",subtitle:"Begin your journey into Joshua Tree National Park",
+items:[
+["#entranceSign",0,2,-5,0,5.2,3.45,"Entering Joshua Tree","The West Entrance is one of the park's busiest gateways.",""],
+["#entranceLanes",-5.2,2,-1,70,4.3,2.86,"Entrance Station","Explore the entrance station and learn about park passes.","station"],
+["#joshuaTree",5.2,2,-1,-70,4.2,2.84,"Joshua Trees","Explore the plant that gave the park its name.","tree"],
+["#nightTraffic",0,2,4.7,180,4.8,3.2,"Busy Nights","See why visitors should plan ahead during crowded periods.","night"]],
+signs:[["PARK PASSES","Explore",-2,.1,-3.5,0,"passes"],["HIDDEN VALLEY","Continue journey",2,.1,-3.5,0,"coming"]]},
+station:{title:"Entrance Station",subtitle:"Where visitors enter, pay, and get oriented",
+items:[
+["#stationWide",0,2,-5,0,5.4,3.61,"West Entrance Station","The current station has multiple vehicle lanes.",""],
+["#stationBuilding",-5,2,-1,70,4.3,2.87,"Station Building","Rangers and fee staff assist arriving visitors.",""],
+["#stationClose",5,2,-1,-70,4.3,2.87,"Closer View","Credit and debit cards are accepted here.",""]],
+signs:[["PARK PASSES","Prices and online passes",0,.1,-3.4,0,"passes"],["BACK","West Entrance",0,.1,3.3,180,"entrance"]]},
+passes:{title:"Park Passes",subtitle:"Choose a pass before arriving",passes:true,
+signs:[["BACK","Entrance Station",0,-1.45,-3.7,0,"station"]]},
+tree:{title:"Joshua Tree",subtitle:"A desert yucca, not a true tree",
+items:[
+["#joshuaTree",0,2,-5,0,5.4,3.65,"Joshua Tree Landscape","Joshua trees are adapted to the Mojave Desert.",""],
+["#flower",5,2,-1,-70,4.4,2.93,"Joshua Tree Flower","Click to learn about the flower cluster.","flower"]],
+signs:[["FLOWER","Open close-up",2.1,.1,-3.4,0,"flower"],["BACK","West Entrance",-2.1,.1,-3.4,0,"entrance"]]},
+flower:{title:"Joshua Tree Flower",subtitle:"Cream-colored blooms appear in dense clusters",
+items:[["#flower",0,2,-5,0,6,4,"Joshua Tree Flower","Joshua trees can bloom from late winter into spring.",""]],
+info:"Joshua tree flowers are pollinated mainly by yucca moths. The moth pollinates the flower and lays eggs in it; some developing seeds feed the moth larvae.",
+signs:[["BACK","Joshua Tree",0,.1,-3.4,0,"tree"]]},
+night:{title:"Busy Nights",subtitle:"Traffic can build around sunsets and peak weekends",
+items:[["#nightTraffic",0,2,-5,0,5.8,3.87,"Night Traffic","Long lines can form during popular weekends and holidays.",""]],
+info:"Buying a digital pass in advance can help speed up entry. Save it to your phone before arriving because cellular service may be limited.",
+signs:[["PARK PASSES","Buy before arriving",2,.1,-3.4,0,"passes"],["BACK","West Entrance",-2,.1,-3.4,0,"entrance"]]},
+coming:{title:"Hidden Valley",subtitle:"This branch will be built next",
+info:"The West Entrance section is connected and working. Hidden Valley will become the next full location.",
+signs:[["BACK","West Entrance",0,.1,-3.4,0,"entrance"]]}
+};
+
+AFRAME.registerComponent("tour-engine",{init:function(){this.root=document.querySelector("#roomRoot");this.open("entrance")},
+clear:function(){while(this.root.firstChild)this.root.removeChild(this.root.firstChild)},
+txt:function(v,p,w,c="#fff",wrap=40){let e=document.createElement("a-text");e.setAttribute("value",v);e.setAttribute("position",p);e.setAttribute("width",w);e.setAttribute("color",c);e.setAttribute("align","center");e.setAttribute("wrap-count",wrap);return e},
+plane:function(w,h,p,c="#111318",o=.95){let e=document.createElement("a-plane");e.setAttribute("width",w);e.setAttribute("height",h);e.setAttribute("position",p);e.setAttribute("material",`color:${c};opacity:${o};transparent:true`);return e},
+item:function(a){let [img,x,y,z,ry,w,h,l,cap,act]=a,g=document.createElement("a-entity");g.setAttribute("position",`${x} ${y} ${z}`);g.setAttribute("rotation",`0 ${ry} 0`);g.appendChild(this.plane(w+.18,h+.62,"0 0 0","#171717",.98));let p=document.createElement("a-plane");p.setAttribute("width",w);p.setAttribute("height",h);p.setAttribute("position","0 .22 .02");p.setAttribute("material",`src:${img};shader:flat`);g.appendChild(p);g.appendChild(this.txt(l,`0 ${-h/2-.08} .03`,Math.min(w,4.5)));if(act){g.classList.add("clickable");g.dataset.action=act}return g},
+sign:function(a){let [t,s,x,y,z,ry,act]=a,g=document.createElement("a-entity");g.setAttribute("position",`${x} ${y} ${z}`);g.setAttribute("rotation",`0 ${ry} 0`);g.classList.add("clickable");g.dataset.action=act;g.appendChild(this.plane(2.25,.82,"0 0 0","#efe6d2",1));g.appendChild(this.txt(t,"0 .12 .02",2.1,"#1b1b1b",24));g.appendChild(this.txt(s,"0 -.18 .02",1.85,"#4a4a4a",30));return g},
+open:function(id){let r=ROOMS[id];if(!r)return;this.clear();this.root.appendChild(this.txt(r.title,"0 4.65 -5.2",5.5));this.root.appendChild(this.txt(r.subtitle,"0 4.18 -5.2",4.7,"#d5d5d5",42));(r.items||[]).forEach(x=>this.root.appendChild(this.item(x)));if(r.passes){let cards=[["PRIVATE VEHICLE","$30","7 days; covers everyone in one private vehicle",-3.6],["MOTORCYCLE","$25","7 days; up to two motorcycles and four people",0],["ON FOOT OR BIKE","$15","7 days per visitor age 16 or older",3.6]];cards.forEach(c=>{let g=document.createElement("a-entity");g.setAttribute("position",`${c[3]} 2 -5`);g.appendChild(this.plane(3.05,3.25,"0 0 0"));g.appendChild(this.txt(c[0],"0 1.05 .02",2.55,"#d8d8d8",24));g.appendChild(this.txt(c[1],"0 .35 .02",2.5,"#fff",18));g.appendChild(this.txt(c[2],"0 -.65 .02",2.5,"#fff",34));this.root.appendChild(g)});let lows=[["JOSHUA TREE ANNUAL PASS","$55","Valid for 12 months",-2],["BUY ONLINE","DIGITAL PASS","Save it before arrival; service is limited",2]];lows.forEach(c=>{let g=document.createElement("a-entity");g.setAttribute("position",`${c[3]} -1.3 -5`);g.appendChild(this.plane(3.55,2.05,"0 0 0"));g.appendChild(this.txt(c[0],"0 .5 .02",3,"#d8d8d8",26));g.appendChild(this.txt(c[1],"0 .05 .02",3,"#fff",22));g.appendChild(this.txt(c[2],"0 -.5 .02",3,"#fff",38));this.root.appendChild(g)})}if(r.info){this.root.appendChild(this.plane(5.8,1.8,"0 -.8 -4.7"));this.root.appendChild(this.txt(r.info,"0 -.8 -4.67",5.2,"#fff",62))}(r.signs||[]).forEach(s=>this.root.appendChild(this.sign(s)));this.root.querySelectorAll(".clickable").forEach(e=>e.addEventListener("click",()=>this.open(e.dataset.action)))}
+});
+</script></head>
+<body>
+<div id="landing"><div id="card"><h1>Joshua Tree</h1><h2>West Entrance</h2><p>Look around, select exhibits, learn about entrance passes, and begin exploring the park.</p><button id="start">Enter Experience</button></div></div>
+<div id="help">Desktop: drag to look • Quest: enter VR, point at signs or images, press trigger</div>
+<a-scene tour-engine renderer="colorManagement:true" vr-mode-ui="enabled:true">
+<a-assets timeout="20000">
+<img id="flower" src="images/flower.jpg"><img id="joshuaTree" src="images/joshua-tree.jpg"><img id="entranceSign" src="images/entrance-sign.jpg"><img id="stationBuilding" src="images/station-building.jpg"><img id="nightTraffic" src="images/night-traffic.jpg"><img id="entranceLanes" src="images/entrance-lanes.jpg"><img id="stationClose" src="images/station-close.jpg"><img id="stationWide" src="images/station-wide.jpg">
+</a-assets>
+<a-sky color="#090909"></a-sky><a-circle rotation="-90 0 0" radius="8" material="color:#151515"></a-circle>
+<a-entity id="roomRoot"></a-entity>
+<a-entity camera look-controls position="0 1.6 0"><a-cursor raycaster="objects:.clickable" color="#fff"></a-cursor></a-entity>
+</a-scene>
+<script>document.getElementById("start").addEventListener("click",()=>document.getElementById("landing").style.display="none")</script>
+</body></html>

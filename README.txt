@@ -1,0 +1,1 @@
+Upload index.html and the images folder to GitHub Pages or Netlify. This prototype includes the West Entrance hub, entrance station, park passes, Joshua tree flower, night traffic, and a Hidden Valley placeholder.
